@@ -1,0 +1,52 @@
+{
+  "irVersion": "1.0",
+  "project": "zod2go",
+  "repository": "https://github.com/grokify/zod2go",
+  "versioning": "semver",
+  "commitConvention": "conventional",
+  "maintainers": ["grokify"],
+  "releases": [
+    {
+      "version": "v0.1.0",
+      "date": "2026-03-21",
+      "highlights": [
+        { "description": "CLI tool to convert TypeScript Zod schemas to Go structs via JSON Schema intermediate format" },
+        { "description": "Full pipeline with `generate` command, or step-by-step with `zod2json` and `json2go` commands" },
+        { "description": "Complete Insomnia v5 schema conversion example included" }
+      ],
+      "added": [
+        { "description": "JSON Schema parser with support for objects, arrays, enums, refs, nullable types", "commit": "42b1180" },
+        { "description": "Go code generator with json/yaml tags, pointers for optional fields, and enum constants", "commit": "42b1180" },
+        { "description": "Zod to JSON Schema conversion via Node.js integration (tsx, ts-node, or node)", "commit": "42b1180" },
+        { "description": "`generate` CLI command for full pipeline: Zod → JSON Schema → Go", "commit": "67b9bd7" },
+        { "description": "`zod2json` CLI command to convert Zod schema to JSON Schema", "commit": "67b9bd7" },
+        { "description": "`json2go` CLI command to convert JSON Schema to Go structs", "commit": "67b9bd7" },
+        { "description": "`check` CLI command to verify Node.js dependencies", "commit": "67b9bd7" },
+        { "description": "`--schema-out` flag for `generate` command to save intermediate JSON Schema", "commit": "67b9bd7" },
+        { "description": "`TypeNameFromExport()` helper to derive Go type names from Zod export names", "commit": "1bf102e" },
+        { "description": "Binary path validation for secure exec.Command execution", "commit": "1bf9458" },
+        { "description": "Insomnia v5 schema conversion example with standalone Zod schema, JSON Schema, and Go types", "commit": "16ff110" }
+      ],
+      "fixed": [
+        { "description": "Handle MarkFlagRequired errors in CLI commands per error handling protocol", "commit": "4d4f0b0" },
+        { "description": "Add binary path validation to address gosec G204 security warning", "commit": "1bf9458" }
+      ],
+      "build": [
+        { "description": "Makefile with build, test, install, and clean targets", "commit": "d07c552" },
+        { "description": "Node.js helper scripts for zod-to-json-schema integration", "commit": "d07c552" },
+        { "description": "Shared CI workflows for linting and testing", "commit": "9ad1b8c" }
+      ],
+      "dependencies": [
+        { "description": "github.com/spf13/cobra v1.10.2 for CLI framework", "commit": "05ff627" }
+      ],
+      "tests": [
+        { "description": "Unit tests for JSON Schema parsing, Go generation, arrays, enums, nullable types", "commit": "dad9c7c" },
+        { "description": "Tests for `validateBinaryPath()` and `TypeNameFromExport()` functions", "commit": "1bf102e" }
+      ],
+      "documentation": [
+        { "description": "README with installation, usage examples, and CLI reference", "commit": "4cd1b6f" },
+        { "description": "Insomnia example README documenting conversion process and limitations", "commit": "16ff110" }
+      ]
+    }
+  ]
+}
