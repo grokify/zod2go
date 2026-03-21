@@ -10,6 +10,17 @@ import (
 	"strings"
 )
 
+// validateBinaryPath ensures the binary path ends with an expected binary name.
+func validateBinaryPath(path string, expectedBinaries ...string) error {
+	base := filepath.Base(path)
+	for _, expected := range expectedBinaries {
+		if base == expected {
+			return nil
+		}
+	}
+	return fmt.Errorf("invalid binary path %q: expected one of %v", path, expectedBinaries)
+}
+
 // ZodConvertOptions configures Zod to JSON Schema conversion.
 type ZodConvertOptions struct {
 	// ExportName is the name of the exported Zod schema to convert.
@@ -110,11 +121,19 @@ async function main() {
 main();
 `, absPath, exportName, exportName, exportName, exportName, refStrategy)
 
+	// Validate binary paths before execution
+	if err := validateBinaryPath(opts.NpxPath, "npx"); err != nil {
+		return nil, fmt.Errorf("validating npx path: %w", err)
+	}
+	if err := validateBinaryPath(opts.NodePath, "node"); err != nil {
+		return nil, fmt.Errorf("validating node path: %w", err)
+	}
+
 	// Try tsx first, then ts-node, then direct node
 	var stdout, stderr bytes.Buffer
 
 	// Try with npx tsx (handles TypeScript natively)
-	cmd := exec.Command(opts.NpxPath, "tsx", "-e", script)
+	cmd := exec.Command(opts.NpxPath, "tsx", "-e", script) // #nosec G204 - paths validated above
 	cmd.Dir = workDir
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -129,7 +148,7 @@ main();
 	stderr.Reset()
 
 	// Try with npx ts-node
-	cmd = exec.Command(opts.NpxPath, "ts-node", "-e", script)
+	cmd = exec.Command(opts.NpxPath, "ts-node", "-e", script) // #nosec G204 - paths validated above
 	cmd.Dir = workDir
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -144,7 +163,7 @@ main();
 	stderr.Reset()
 
 	// Try with node directly (for JS files or if TypeScript is pre-compiled)
-	cmd = exec.Command(opts.NodePath, "-e", script)
+	cmd = exec.Command(opts.NodePath, "-e", script) // #nosec G204 - paths validated above
 	cmd.Dir = workDir
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
