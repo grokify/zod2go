@@ -139,6 +139,20 @@ func DefaultOptions() Options {
 	}
 }
 
+// TypeNameFromExport derives a Go type name from a Zod export name.
+// It removes the "Schema" suffix if present.
+func TypeNameFromExport(exportName string) string {
+	if exportName == "" {
+		return "Root"
+	}
+	name := exportName
+	const suffix = "Schema"
+	if len(name) > len(suffix) && name[len(name)-len(suffix):] == suffix {
+		name = name[:len(name)-len(suffix)]
+	}
+	return name
+}
+
 // Generator converts JSON Schema to Go code.
 type Generator struct {
 	opts        Options
@@ -181,9 +195,7 @@ func (g *Generator) Generate() (string, error) {
 	g.output.WriteString(fmt.Sprintf("package %s\n\n", g.opts.PackageName))
 
 	// Generate root type
-	if err := g.generateType(g.opts.TypeName, g.schema); err != nil {
-		return "", fmt.Errorf("generating root type: %w", err)
-	}
+	g.generateType(g.opts.TypeName, g.schema)
 
 	// Generate definitions
 	names := make([]string, 0, len(g.definitions))
@@ -196,9 +208,7 @@ func (g *Generator) Generate() (string, error) {
 		if g.generated[name] {
 			continue
 		}
-		if err := g.generateType(name, g.definitions[name]); err != nil {
-			return "", fmt.Errorf("generating definition %s: %w", name, err)
-		}
+		g.generateType(name, g.definitions[name])
 	}
 
 	// Write types
@@ -220,9 +230,9 @@ func (g *Generator) Generate() (string, error) {
 }
 
 // generateType generates a Go type from a JSON Schema.
-func (g *Generator) generateType(name string, schema *JSONSchema) error {
+func (g *Generator) generateType(name string, schema *JSONSchema) {
 	if g.generated[name] {
-		return nil
+		return
 	}
 	g.generated[name] = true
 
@@ -325,7 +335,6 @@ func (g *Generator) generateType(name string, schema *JSONSchema) error {
 	}
 
 	g.types = append(g.types, buf.String())
-	return nil
 }
 
 // schemaToGoType converts a JSON Schema to a Go type string.

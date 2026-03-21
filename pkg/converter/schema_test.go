@@ -242,3 +242,26 @@ func TestToPascalCase(t *testing.T) {
 		}
 	}
 }
+
+func TestTypeNameFromExport(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"UserSchema", "User"},
+		{"InsomniaFileSchema", "InsomniaFile"},
+		{"Schema", "Schema"}, // Edge case: name is just "Schema"
+		{"ConfigSchema", "Config"},
+		{"MyAPIResponseSchema", "MyAPIResponse"},
+		{"User", "User"},                           // No Schema suffix
+		{"", "Root"},                               // Empty string
+		{"DataSchemaVersion", "DataSchemaVersion"}, // Schema not at end
+	}
+
+	for _, tc := range tests {
+		result := TypeNameFromExport(tc.input)
+		if result != tc.expected {
+			t.Errorf("TypeNameFromExport(%q) = %q, expected %q", tc.input, result, tc.expected)
+		}
+	}
+}
