@@ -38,8 +38,12 @@ func init() {
 	zod2jsonCmd.Flags().StringVarP(&z2jExport, "export", "e", "", "Exported Zod schema name to convert")
 	zod2jsonCmd.Flags().StringVar(&z2jRefStrategy, "ref-strategy", "none", "Reference strategy: none, root, relative")
 
-	zod2jsonCmd.MarkFlagRequired("input")
-	zod2jsonCmd.MarkFlagRequired("export")
+	if err := zod2jsonCmd.MarkFlagRequired("input"); err != nil {
+		panic(fmt.Sprintf("failed to mark input flag required: %v", err))
+	}
+	if err := zod2jsonCmd.MarkFlagRequired("export"); err != nil {
+		panic(fmt.Sprintf("failed to mark export flag required: %v", err))
+	}
 }
 
 func runZod2Json(cmd *cobra.Command, args []string) error {

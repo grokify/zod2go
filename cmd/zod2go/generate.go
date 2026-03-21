@@ -47,8 +47,12 @@ func init() {
 	generateCmd.Flags().BoolVar(&genNoPointers, "no-pointers", false, "Don't use pointers for optional fields")
 	generateCmd.Flags().StringVar(&genSchemaOut, "schema-out", "", "Also save intermediate JSON Schema to this file")
 
-	generateCmd.MarkFlagRequired("input")
-	generateCmd.MarkFlagRequired("export")
+	if err := generateCmd.MarkFlagRequired("input"); err != nil {
+		panic(fmt.Sprintf("failed to mark input flag required: %v", err))
+	}
+	if err := generateCmd.MarkFlagRequired("export"); err != nil {
+		panic(fmt.Sprintf("failed to mark export flag required: %v", err))
+	}
 }
 
 func runGenerate(cmd *cobra.Command, args []string) error {
@@ -65,12 +69,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	if genTypeName != "" {
 		goOpts.TypeName = genTypeName
 	} else if genExport != "" {
-		// Derive type name from export name
-		goOpts.TypeName = genExport
-		// Remove "Schema" suffix if present
-		if len(goOpts.TypeName) > 6 && goOpts.TypeName[len(goOpts.TypeName)-6:] == "Schema" {
-			goOpts.TypeName = goOpts.TypeName[:len(goOpts.TypeName)-6]
-		}
+		goOpts.TypeName = converter.TypeNameFromExport(genExport)
 	}
 
 	// Step 1: Convert Zod to JSON Schema

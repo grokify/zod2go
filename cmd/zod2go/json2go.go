@@ -45,7 +45,9 @@ func init() {
 	json2goCmd.Flags().BoolVar(&j2gNoPointers, "no-pointers", false, "Don't use pointers for optional fields")
 	json2goCmd.Flags().BoolVar(&j2gNoComments, "no-comments", false, "Don't generate comments from descriptions")
 
-	json2goCmd.MarkFlagRequired("input")
+	if err := json2goCmd.MarkFlagRequired("input"); err != nil {
+		panic(fmt.Sprintf("failed to mark input flag required: %v", err))
+	}
 }
 
 func runJson2Go(cmd *cobra.Command, args []string) error {
